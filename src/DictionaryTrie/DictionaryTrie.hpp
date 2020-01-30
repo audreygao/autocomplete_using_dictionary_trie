@@ -7,10 +7,23 @@
 #define DICTIONARY_TRIE_HPP
 
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 using namespace std;
+
+class TrieNode {
+  public:
+    int frequency;
+    std::unordered_map<char, int> indexMap;
+    std::vector<TrieNode*> ptrArray;
+
+    TrieNode(int freq) {
+        frequency = freq;
+        indexMap = {};
+    }
+};
 
 /**
  * The class for a dictionary ADT, implemented as either
@@ -18,15 +31,30 @@ using namespace std;
  */
 class DictionaryTrie {
   private:
+    TrieNode* root;
     // TODO: add private members and helper methods here
   public:
-    /* TODO: add function header */
+    /**
+     * Initializes a new DictionaryTrie
+     */
     DictionaryTrie();
 
-    /* TODO: add function header */
+    /**
+     * Insert a word with its frequency into the trie;
+     * Return true if word is inserted successfully
+     * Return false if string is empty or already existed
+     * Parameter:
+     *  - word: word to be inserted
+     *  - freq: frequency of the word
+     */
     bool insert(string word, unsigned int freq);
 
-    /* TODO: add function header */
+    /**
+     * Return true if the word is in the DictionaryTrie
+     * Return false otherwise.
+     * Parameter:
+     *  - word: word to search for
+     */
     bool find(string word) const;
 
     /* TODO: add function header */
