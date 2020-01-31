@@ -9,7 +9,7 @@
 #include <stack>
 
 /* TODO */
-DictionaryTrie::DictionaryTrie() { root = new TrieNode(0); }
+DictionaryTrie::DictionaryTrie() { root = new TrieNode(0, 0, -1); }
 
 /* TODO */
 bool DictionaryTrie::insert(string word, unsigned int freq) {
@@ -26,7 +26,7 @@ bool DictionaryTrie::insert(string word, unsigned int freq) {
             curr->indexMap[word[i]] = curr->indexMap.size();
 
             // add TrieNode* into ptrArray
-            curr->ptrArray.push_back(new TrieNode(0));
+            curr->ptrArray.push_back(new TrieNode(0, word[i], i));
 
             // update curr to point to next TrieNode
             curr = curr->ptrArray.at(curr->indexMap.size() - 1);
@@ -70,16 +70,35 @@ bool DictionaryTrie::find(string word) const {
         }
     }
 
+    if (curr->frequency == 0) {
+        return false;
+    }
+
     return true;
+}
+
+bool cmp(pair<string, int>& a, pair<string, int>& b) {
+    if (a.second != b.second) {
+        return a.second < b.second;
+    }
+    return a.first > b.first;
 }
 
 /* TODO */
 vector<string> DictionaryTrie::predictCompletions(string prefix,
                                                   unsigned int numCompletions) {
+    // for DFS
     stack<TrieNode*> stack;
-    std::priority_queue<int> queue;
-    // prefix doesnt exits
-    if (find(prefix) == 0) {
+
+    // for ordering each word
+    priority_queue<pair<string, int>, vector<pair<string, int>>, decltype(&cmp)>
+        a(cmp);
+
+    // vector to store the autocompleted words
+    std::vector<string> vec;
+
+    // prefis is empty
+    if (prefix == "") {
         return {};
     }
 
@@ -87,6 +106,11 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
     TrieNode* curr = root;
 
     for (int i = 0; i < prefix.length(); i++) {
+        // prefix doesn't exist in the trie
+        if (curr->indexMap.find(prefix[i]) == curr->indexMap.end()) {
+            return {};
+        }
+
         // get char index stored in hashmap
         int index = curr->indexMap[prefix[i]];
 
@@ -99,20 +123,40 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
 
     stack.push(curr);
 
+    string word;
+
     while (!stack.empty()) {
         TrieNode* top = stack.top();
+
         stack.pop();
 
+        // update the word
+        word.append(word, 0, top->length);
+        word.push_back(top->character);
+
+        // if is an end of a word
+        if (top->frequency != 0) {
+            a.push(make_pair(word, top->frequency));
+        }
+
+        // for each children of the current node
         for (int i = 0; i < top->ptrArray.size(); i++) {
             stack.push(top->ptrArray[i]);
         }
     }
 
     // whole word nums fewer than numOf Completion
-
+    if (a.size() < numCompletions) {
+        for (int i = 0; i < a.size(); i++) {
+            vec.push_back(a.top().first);
+        }
+    }
     // normal case,directly pop
+    for (int i = 0; i < numCompletions; i++) {
+        vec.push_back(a.top().first);
+    }
 
-    return {};
+    return vec;
 }
 
 /* TODO */
@@ -122,4 +166,8 @@ std::vector<string> DictionaryTrie::predictUnderscores(
 }
 
 /* TODO */
-DictionaryTrie::~DictionaryTrie() {}
+DictionaryTrie::~DictionaryTrie() {
+    for (int i = 0; i < root->ptrArray.size(); i++) {
+        free(root->ptrArray[i]);
+    }
+}

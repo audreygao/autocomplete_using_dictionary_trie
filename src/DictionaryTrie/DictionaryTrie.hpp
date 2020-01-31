@@ -16,11 +16,15 @@ using namespace std;
 class TrieNode {
   public:
     int frequency;
+    int length;
     std::unordered_map<char, int> indexMap;
     std::vector<TrieNode*> ptrArray;
+    char character;
 
-    TrieNode(int freq) {
+    TrieNode(int freq, char ch, int len) {
         frequency = freq;
+        character = ch;
+        length = len;
         indexMap = {};
     }
 };

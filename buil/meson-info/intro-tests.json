@@ -1,0 +1,1 @@
+[{"cmd": ["/Code/cse100_pa2/buil/test/test_DictionaryTrie.cpp.executable"], "env": {}, "name": "my DictionaryTrie test", "workdir": null, "timeout": 30, "suite": ["pa2_autocomplete"], "is_parallel": true}]
