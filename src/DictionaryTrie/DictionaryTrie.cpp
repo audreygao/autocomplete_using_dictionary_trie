@@ -179,10 +179,11 @@ DictionaryTrie::~DictionaryTrie() {
         TrieNode* top = stack.top();
 
         stack.pop();
-        free(top);
         // for each children of the current node
         for (int i = 0; i < top->ptrArray.size(); i++) {
             stack.push(top->ptrArray[i]);
         }
+        top->ptrArray.clear();
+        free(top);
     }
 }

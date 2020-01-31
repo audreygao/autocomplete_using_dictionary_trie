@@ -18,7 +18,7 @@ class TrieNode {
     int frequency;
     int length;
     std::unordered_map<char, int> indexMap;
-    std::vector<TrieNode*> ptrArray;
+    std::vector<TrieNode*> ptrArray = {};
     char character;
 
     TrieNode(int freq, char ch, int len) {
