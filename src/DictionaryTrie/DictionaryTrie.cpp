@@ -9,7 +9,7 @@
 #include <stack>
 
 /* TODO */
-DictionaryTrie::DictionaryTrie() { root = new TrieNode(0, 0, -1); }
+DictionaryTrie::DictionaryTrie() { root = new TrieNode(0, '\0', -1); }
 
 /* TODO */
 bool DictionaryTrie::insert(string word, unsigned int freq) {
@@ -124,6 +124,8 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
     stack.push(curr);
 
     string word;
+    word = prefix.substr(0, prefix.length() - 1);
+    // word.append(prefix, 0, prefix.length() - 1);
 
     while (!stack.empty()) {
         TrieNode* top = stack.top();
@@ -131,7 +133,7 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
         stack.pop();
 
         // update the word
-        word.append(word, 0, top->length);
+        word = word.substr(0, top->length);
         word.push_back(top->character);
 
         // if is an end of a word
@@ -147,13 +149,17 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
 
     // whole word nums fewer than numOf Completion
     if (a.size() < numCompletions) {
-        for (int i = 0; i < a.size(); i++) {
+        int size = a.size();
+        for (int i = 0; i < size; i++) {
             vec.push_back(a.top().first);
+            a.pop();
         }
-    }
-    // normal case,directly pop
-    for (int i = 0; i < numCompletions; i++) {
-        vec.push_back(a.top().first);
+    } else {
+        // normal case,directly pop
+        for (int i = 0; i < numCompletions; i++) {
+            vec.push_back(a.top().first);
+            a.pop();
+        }
     }
 
     return vec;
@@ -167,7 +173,16 @@ std::vector<string> DictionaryTrie::predictUnderscores(
 
 /* TODO */
 DictionaryTrie::~DictionaryTrie() {
-    for (int i = 0; i < root->ptrArray.size(); i++) {
-        free(root->ptrArray[i]);
+    stack<TrieNode*> stack;
+    stack.push(root);
+    while (!stack.empty()) {
+        TrieNode* top = stack.top();
+
+        stack.pop();
+        free(top);
+        // for each children of the current node
+        for (int i = 0; i < top->ptrArray.size(); i++) {
+            stack.push(top->ptrArray[i]);
+        }
     }
 }
