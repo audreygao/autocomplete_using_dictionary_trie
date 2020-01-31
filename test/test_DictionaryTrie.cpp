@@ -38,6 +38,12 @@ TEST(DictTrieTests, TEST_INSERT) {
     ASSERT_EQ(dict.find("bad"), true);
     ASSERT_EQ(dict.find("bat"), true);
     ASSERT_EQ(dict.find("ba"), false);
+    ASSERT_EQ(dict.find("b"), false);
+
+    ASSERT_EQ(dict.insert("bat", 20), false);
+    ASSERT_EQ(dict.insert("bat", 200), false);
+    ASSERT_EQ(dict.insert("", 20), false);
+    ASSERT_EQ(dict.find(""), false);
 }
 
 TEST(DictTrieTests, TEST_AUTOCOMPLETE) {

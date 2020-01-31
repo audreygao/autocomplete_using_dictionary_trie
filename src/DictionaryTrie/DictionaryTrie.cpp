@@ -171,19 +171,37 @@ std::vector<string> DictionaryTrie::predictUnderscores(
     return {};
 }
 
+void DFS(TrieNode* node) {
+    if (node->ptrArray.empty()) {
+        delete (node);
+        node = nullptr;
+        return;
+    }
+    for (int i = 0; i < node->ptrArray.size(); i++) {
+        DFS(node->ptrArray[i]);
+    }
+    delete (node);
+}
+
 /* TODO */
 DictionaryTrie::~DictionaryTrie() {
+    DFS(root);
+
+    /**
     stack<TrieNode*> stack;
     stack.push(root);
     while (!stack.empty()) {
         TrieNode* top = stack.top();
 
         stack.pop();
+
         // for each children of the current node
         for (int i = 0; i < top->ptrArray.size(); i++) {
             stack.push(top->ptrArray[i]);
         }
+
         top->ptrArray.clear();
         free(top);
     }
+    */
 }
