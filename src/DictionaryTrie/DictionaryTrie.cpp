@@ -165,6 +165,40 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
     return vec;
 }
 
+void bt(int currInd,
+        priority_queue<pair<string, int>, vector<pair<string, int>>,
+                       decltype(&cmp)>& pq,
+        string pattern, string curStr, TrieNode* curNode, int freq) {
+    if (curNode->length >= 0 && curNode->length >= pattern.length()) {
+        std::cout << "greater than length" << endl;
+        return;
+    }
+    if (curNode->length >= 0 && pattern[curNode->length] != '_' &&
+        curNode->character != pattern[curNode->length]) {
+        std::cout << "this is a wildcard" << endl;
+        return;
+    }
+
+    // base case 2: check if string is ready
+    if (curNode->length == pattern.length() - 1) {
+        std::cout << "reach end of word" << endl;
+
+        if (curNode->frequency != 0) {
+            std::cout << "something added to pq" << endl;
+            curStr = curStr + curNode->character;
+            pq.push(make_pair(curStr.substr(1, pattern.length()),
+                              curNode->frequency));
+        }
+        return;
+    }
+
+    // recursion
+    for (int i = 0; i < curNode->ptrArray.size(); i++) {
+        bt(currInd + 1, pq, pattern, curStr + curNode->character,
+           curNode->ptrArray[i], curNode->frequency);
+    }
+}
+
 /* TODO */
 std::vector<string> DictionaryTrie::predictUnderscores(
     string pattern, unsigned int numCompletions) {
@@ -175,10 +209,17 @@ std::vector<string> DictionaryTrie::predictUnderscores(
     priority_queue<pair<string, int>, vector<pair<string, int>>, decltype(&cmp)>
         pq(cmp);
 
+    if (pattern.length() == 3) {
+        std::cout << "length is 3" << endl;
+    }
     // vector to store the autocompleted words
     std::vector<string> vec;
 
-    bt(0, pq, pattern, "", root);
+    bt(0, pq, pattern, "", root, 0);
+
+    if (pq.size() == 0) {
+        std::cout << "pq has nothing" << endl;
+    }
 
     // whole word nums fewer than numOf Completion
     if (pq.size() < numCompletions) {
@@ -196,32 +237,6 @@ std::vector<string> DictionaryTrie::predictUnderscores(
     }
 
     return vec;
-}
-
-void bt(int currInd,
-        priority_queue<pair<string, int>, vector<pair<string, int>>,
-                       decltype(&cmp)>& pq,
-        string pattern, string curStr, TrieNode* curNode) {
-    // base case 1: check if node is empty
-
-    // base case 2: check if string is ready
-    if (curNode->length == pattern.length()) {
-        if (curNode->frequency != 0) {
-            pq.push(make_pair(curStr, curNode->frequency));
-        }
-        return;
-    }
-
-    if (pattern[curNode->length] != '_' &&
-        curNode->character != pattern[curNode->length]) {
-        return;
-    }
-
-    // recursion
-    for (int i = 0; i < curNode->ptrArray.size(); i++) {
-        bt(currInd + 1, pq, pattern, curStr + curNode->character,
-           curNode->ptrArray[i]);
-    }
 }
 
 void DFS(TrieNode* node) {

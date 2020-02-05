@@ -61,7 +61,7 @@ TEST(DictTrieTests, TEST_AUTOCOMPLETE) {
     ASSERT_EQ(words.size(), 3);
     ASSERT_EQ(words.at(1), "apps");
 }
-/*
+
 TEST(DictTrieTests, TEST_UNDERSCORE) {
     DictionaryTrie dict;
 
@@ -77,17 +77,3 @@ TEST(DictTrieTests, TEST_UNDERSCORE) {
     ASSERT_EQ(words.size(), 1);
     ASSERT_EQ(words.at(0), "app");
 }
-*/
-/**
-TEST(DictTrieTests, EMPTY_TEST) {
-    DictionaryTrie dict;
-    ASSERT_EQ(dict.find("abrakadabra"), false);
-}
-
-TEST(DictTrieTests, EMPTY_TEST) {
-    DictionaryTrie dict;
-    ASSERT_EQ(dict.find("abrakadabra"), false);
-}
-*/
-
-/* TODO */
