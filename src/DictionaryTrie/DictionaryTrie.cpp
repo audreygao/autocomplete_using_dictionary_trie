@@ -168,7 +168,60 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
 /* TODO */
 std::vector<string> DictionaryTrie::predictUnderscores(
     string pattern, unsigned int numCompletions) {
-    return {};
+    if (pattern.empty()) {
+        return {};
+    }
+
+    priority_queue<pair<string, int>, vector<pair<string, int>>, decltype(&cmp)>
+        pq(cmp);
+
+    // vector to store the autocompleted words
+    std::vector<string> vec;
+
+    bt(0, pq, pattern, "", root);
+
+    // whole word nums fewer than numOf Completion
+    if (pq.size() < numCompletions) {
+        int size = pq.size();
+        for (int i = 0; i < size; i++) {
+            vec.push_back(pq.top().first);
+            pq.pop();
+        }
+    } else {
+        // normal case,directly pop
+        for (int i = 0; i < numCompletions; i++) {
+            vec.push_back(pq.top().first);
+            pq.pop();
+        }
+    }
+
+    return vec;
+}
+
+void bt(int currInd,
+        priority_queue<pair<string, int>, vector<pair<string, int>>,
+                       decltype(&cmp)>& pq,
+        string pattern, string curStr, TrieNode* curNode) {
+    // base case 1: check if node is empty
+
+    // base case 2: check if string is ready
+    if (curNode->length == pattern.length()) {
+        if (curNode->frequency != 0) {
+            pq.push(make_pair(curStr, curNode->frequency));
+        }
+        return;
+    }
+
+    if (pattern[curNode->length] != '_' &&
+        curNode->character != pattern[curNode->length]) {
+        return;
+    }
+
+    // recursion
+    for (int i = 0; i < curNode->ptrArray.size(); i++) {
+        bt(currInd + 1, pq, pattern, curStr + curNode->character,
+           curNode->ptrArray[i]);
+    }
 }
 
 void DFS(TrieNode* node) {

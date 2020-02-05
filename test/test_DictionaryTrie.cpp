@@ -61,7 +61,23 @@ TEST(DictTrieTests, TEST_AUTOCOMPLETE) {
     ASSERT_EQ(words.size(), 3);
     ASSERT_EQ(words.at(1), "apps");
 }
+/*
+TEST(DictTrieTests, TEST_UNDERSCORE) {
+    DictionaryTrie dict;
 
+    ASSERT_EQ(dict.insert("a", 200), true);
+    ASSERT_EQ(dict.insert("app", 180), true);
+    ASSERT_EQ(dict.insert("apps", 190), true);
+    ASSERT_EQ(dict.insert("apple", 170), true);
+    ASSERT_EQ(dict.insert("applet", 170), true);
+
+    vector<string> words;
+    string prefix = "_p_";
+    words = dict.predictUnderscores(prefix, 3);
+    ASSERT_EQ(words.size(), 1);
+    ASSERT_EQ(words.at(0), "app");
+}
+*/
 /**
 TEST(DictTrieTests, EMPTY_TEST) {
     DictionaryTrie dict;

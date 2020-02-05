@@ -67,6 +67,8 @@ int main(int argc, char** argv) {
 
     char cont = 'y';
     unsigned int numberOfCompletions;
+    std::vector<string> vec;
+
     while (cont == 'y') {
         cout << "Enter a prefix/pattern to search for:" << endl;
         getline(cin, word);
@@ -74,8 +76,12 @@ int main(int argc, char** argv) {
         cin >> numberOfCompletions;
 
         // TODO
-        std::vector<string> vec =
-            dt->predictCompletions(word, numberOfCompletions);
+
+        if (word.find("_") != std::string::npos) {
+            vec = dt->predictUnderscores(word, numberOfCompletions);
+        } else {
+            vec = dt->predictCompletions(word, numberOfCompletions);
+        }
 
         for (int i = 0; i < vec.size(); i++) {
             cout << vec.at(i) << endl;
