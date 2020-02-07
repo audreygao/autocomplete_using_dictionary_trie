@@ -1,4 +1,18 @@
-Reading file: data/short_dict.txt
+Reading file: data/unique_freq_dict.txt
 Enter a prefix/pattern to search for:
 Enter a number of completions:
+get
+got
+gut
+grt
+git
+Continue? (y/n)
+Enter a prefix/pattern to search for:
+Enter a number of completions:
+sit
+set
+sat
+sut
+spt
+sot
 Continue? (y/n)

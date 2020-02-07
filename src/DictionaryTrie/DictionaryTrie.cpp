@@ -70,6 +70,7 @@ bool DictionaryTrie::find(string word) const {
         }
     }
 
+    // not valid word: not end of word
     if (curr->frequency == 0) {
         return false;
     }
@@ -77,10 +78,14 @@ bool DictionaryTrie::find(string word) const {
     return true;
 }
 
+// comparator for priority queue
 bool cmp(pair<string, int>& a, pair<string, int>& b) {
+    // different frequency, return the one with larger frequncy
     if (a.second != b.second) {
         return a.second < b.second;
     }
+
+    // same frequency, compare ascii value of string
     return a.first > b.first;
 }
 
@@ -165,27 +170,27 @@ vector<string> DictionaryTrie::predictCompletions(string prefix,
     return vec;
 }
 
-void bt(int currInd,
-        priority_queue<pair<string, int>, vector<pair<string, int>>,
+void bt(priority_queue<pair<string, int>, vector<pair<string, int>>,
                        decltype(&cmp)>& pq,
         string pattern, string curStr, TrieNode* curNode, int freq) {
+    // base case 1: word length over pattern length
     if (curNode->length >= 0 && curNode->length >= pattern.length()) {
-        std::cout << "greater than length" << endl;
         return;
     }
+
+    // check if character at this index matches char in pattern
+    // if char in pattern is not underscore
     if (curNode->length >= 0 && pattern[curNode->length] != '_' &&
         curNode->character != pattern[curNode->length]) {
-        std::cout << "this is a wildcard" << endl;
         return;
     }
 
-    // base case 2: check if string is ready
+    // check if string is end of word and valid
     if (curNode->length == pattern.length() - 1) {
-        std::cout << "reach end of word" << endl;
-
         if (curNode->frequency != 0) {
-            std::cout << "something added to pq" << endl;
             curStr = curStr + curNode->character;
+
+            // add the final word to priority queue
             pq.push(make_pair(curStr.substr(1, pattern.length()),
                               curNode->frequency));
         }
@@ -194,14 +199,15 @@ void bt(int currInd,
 
     // recursion
     for (int i = 0; i < curNode->ptrArray.size(); i++) {
-        bt(currInd + 1, pq, pattern, curStr + curNode->character,
-           curNode->ptrArray[i], curNode->frequency);
+        bt(pq, pattern, curStr + curNode->character, curNode->ptrArray[i],
+           curNode->frequency);
     }
 }
 
 /* TODO */
 std::vector<string> DictionaryTrie::predictUnderscores(
     string pattern, unsigned int numCompletions) {
+    // pattern is empty
     if (pattern.empty()) {
         return {};
     }
@@ -209,25 +215,20 @@ std::vector<string> DictionaryTrie::predictUnderscores(
     priority_queue<pair<string, int>, vector<pair<string, int>>, decltype(&cmp)>
         pq(cmp);
 
-    if (pattern.length() == 3) {
-        std::cout << "length is 3" << endl;
-    }
-    // vector to store the autocompleted words
     std::vector<string> vec;
 
-    bt(0, pq, pattern, "", root, 0);
-
-    if (pq.size() == 0) {
-        std::cout << "pq has nothing" << endl;
-    }
+    bt(pq, pattern, "", root, 0);
 
     // whole word nums fewer than numOf Completion
+    // pop all words available
     if (pq.size() < numCompletions) {
         int size = pq.size();
         for (int i = 0; i < size; i++) {
             vec.push_back(pq.top().first);
             pq.pop();
         }
+
+        // more words than numCompletion
     } else {
         // normal case,directly pop
         for (int i = 0; i < numCompletions; i++) {
@@ -239,37 +240,22 @@ std::vector<string> DictionaryTrie::predictUnderscores(
     return vec;
 }
 
-void DFS(TrieNode* node) {
+void deleteAll(TrieNode* node) {
+    // base case: reach a leaf
     if (node->ptrArray.empty()) {
         delete (node);
         node = nullptr;
         return;
     }
+
+    // recursively delete all children nodes
     for (int i = 0; i < node->ptrArray.size(); i++) {
-        DFS(node->ptrArray[i]);
+        deleteAll(node->ptrArray[i]);
     }
+
+    // delete the current node after deleting its children
     delete (node);
 }
 
 /* TODO */
-DictionaryTrie::~DictionaryTrie() {
-    DFS(root);
-
-    /**
-    stack<TrieNode*> stack;
-    stack.push(root);
-    while (!stack.empty()) {
-        TrieNode* top = stack.top();
-
-        stack.pop();
-
-        // for each children of the current node
-        for (int i = 0; i < top->ptrArray.size(); i++) {
-            stack.push(top->ptrArray[i]);
-        }
-
-        top->ptrArray.clear();
-        free(top);
-    }
-    */
-}
+DictionaryTrie::~DictionaryTrie() { deleteAll(root); }
